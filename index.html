@@ -84,62 +84,58 @@
 body:not(.logged-organizae) .app{display:none}</style>
 </head>
 <body>
+
 <div id="welcome-organizae">
   <div class="welcome-content">
+
     <div class="welcome-logo">
-  <svg width="68" height="68" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="12" y="27" width="76" height="54" rx="12" stroke="white" stroke-width="6"/>
-    <path d="M12 40H88" stroke="white" stroke-width="6"/>
-    <path d="M58 55H88V70H58C49 70 49 55 58 55Z" fill="white"/>
-    <circle cx="65" cy="62" r="3" fill="#155eef"/>
-    <circle cx="76" cy="18" r="15" fill="#16C784"/>
-    <path d="M69 18L74 23L83 13" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>
-</div>
-    <h1>Organizaê</h1>
-    <p class="welcome-subtitle">Seu dinheiro, em ordem.</p>
-    <div class="welcome-art" style="margin:10px auto 22px;max-width:330px;padding:12px;background:linear-gradient(145deg,#ffffff25,#ffffff0b);border:1px solid #ffffff35;border-radius:25px;box-shadow:0 14px 35px #00174430">
-<svg viewBox="0 0 330 205" width="100%" role="img" aria-label="Organização financeira" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<linearGradient id="phone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#eaf1ff"/></linearGradient>
-<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe69a"/><stop offset="1" stop-color="#e8a928"/></linearGradient>
-</defs>
-<rect x="103" y="12" width="124" height="181" rx="19" fill="#072d82" opacity=".28"/>
-<rect x="108" y="7" width="114" height="181" rx="18" fill="url(#phone)" stroke="#dce7ff" stroke-width="2"/>
-<rect x="148" y="14" width="34" height="4" rx="2" fill="#a9bce4"/>
-<text x="121" y="39" fill="#63738f" font-size="8" font-family="Arial">SALDO ATUAL</text>
-<text x="121" y="56" fill="#153c91" font-size="15" font-weight="700" font-family="Arial">R$ 2.450</text>
-<rect x="120" y="66" width="90" height="65" rx="8" fill="#e8f0ff"/>
-<path d="M130 115L147 101L160 106L181 83L198 91" fill="none" stroke="#155eef" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M190 82H199V91" fill="none" stroke="#155eef" stroke-width="3"/>
-<path d="M130 121H199" stroke="#c7d7f5"/>
-<rect x="121" y="140" width="88" height="8" rx="4" fill="#d5e2fb"/>
-<rect x="121" y="153" width="66" height="8" rx="4" fill="#d5e2fb"/>
-<circle cx="196" cy="157" r="7" fill="#16b981"/>
-<rect x="17" y="43" width="77" height="76" rx="13" fill="#fff"/>
-<rect x="17" y="43" width="77" height="22" rx="13" fill="#f4c451"/>
-<g fill="#47618e" font-family="Arial" font-size="9" text-anchor="middle">
-<text x="37" y="82">12</text><text x="56" y="82">13</text><text x="75" y="82">14</text>
-<text x="37" y="101">19</text><text x="56" y="101">20</text><text x="75" y="101">21</text>
-</g>
-<circle cx="56" cy="98" r="11" fill="none" stroke="#155eef" stroke-width="2"/>
-<path d="M252 37L282 48V75C282 95 269 108 252 116C235 108 222 95 222 75V48Z" fill="#fff"/>
-<path d="M239 76L249 86L267 65" fill="none" stroke="#16b981" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M245 147V157C245 168 295 168 295 157V147" fill="url(#gold)" stroke="#d99a22" stroke-width="1.5"/>
-<ellipse cx="270" cy="147" rx="25" ry="8" fill="#ffe49a" stroke="#d99a22"/>
-<ellipse cx="270" cy="137" rx="22" ry="7" fill="#e8ae32"/>
-<circle cx="87" cy="153" r="16" fill="#16b981"/>
-<path d="M79 153L85 159L96 146" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</div>
-    <div id="welcome-options">
-      <button class="welcome-choice welcome-enter" id="welcome-enter" type="button">Entrar</button>
-      <button class="welcome-choice welcome-signup" id="welcome-signup" type="button">Cadastrar</button>
+      <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none" aria-label="Logo Organizaê">
+        <path d="M50 8 A42 42 0 1 0 91 42" stroke="white" stroke-width="12" stroke-linecap="round"/>
+        <path d="M25 51 L46 72 L91 25" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="78" y="5" width="13" height="13" rx="2" fill="white"/>
+        <rect x="91" y="24" width="9" height="9" rx="2" fill="white"/>
+        <rect x="77" y="34" width="12" height="12" rx="2" fill="white"/>
+      </svg>
     </div>
+
+    <h1>Organizaê</h1>
+    <div class="welcome-divider"></div>
+    <p class="welcome-subtitle">Seu dinheiro, em ordem.</p>
+
+    <div id="welcome-options">
+      <button class="welcome-choice welcome-enter" id="welcome-enter" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M28 8h11v32H28M5 24h25M20 14l10 10-10 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Entrar</span>
+        <b>›</b>
+      </button>
+
+      <button class="welcome-choice welcome-signup" id="welcome-signup" type="button">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="14" r="9" fill="currentColor"/>
+          <path d="M7 42c0-11 7-17 17-17s17 6 17 17" fill="currentColor"/>
+        </svg>
+        <span>Cadastrar</span>
+        <b>›</b>
+      </button>
+    </div>
+
     <div id="auth-slot"></div>
     <button class="welcome-back hidden" id="welcome-back" type="button">Voltar</button>
+
+    <div class="welcome-security">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 3L43 10v13c0 12-8 19-19 23C13 42 5 35 5 23V10z" fill="none" stroke="currentColor" stroke-width="3"/>
+        <rect x="16" y="21" width="16" height="13" rx="3" fill="currentColor"/>
+        <path d="M19 21v-4a5 5 0 0 1 10 0v4" fill="none" stroke="currentColor" stroke-width="3"/>
+      </svg>
+      <span>Seus dados protegidos<br/>com segurança</span>
+    </div>
+
   </div>
 </div>
+
 <div class="app">
 <header class="top"><div class="toprow"><div class="brand"><div class="logo">O</div><div><h1>Organizaê</h1><p>Seu dinheiro, em ordem.</p></div></div><span class="pill">VERSÃO INICIAL</span></div><div class="greeting" id="greeting">Vamos cuidar do seu dinheiro</div><div class="balance-label">Saldo registrado</div><div class="balance" id="balance">R$ 0,00</div><div class="stats"><div class="stat"><span class="label">Entradas no mês</span><strong id="incomeTotal">R$ 0,00</strong></div><div class="stat"><span class="label">Despesas no mês</span><strong id="expenseTotal">R$ 0,00</strong></div></div></header>
 <section class="auth hidden" id="authPanel"><h2>Acesse sua conta do Organizaê</h2><p class="note">Crie uma conta com seu e-mail ou entre se já tiver cadastro. Seus lançamentos ficarão vinculados à sua conta.</p><div class="authgrid"><div class="wide"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com"></div><div class="wide"><label for="authPassword">Senha (mínimo de 6 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha"></div></div><div class="authactions"><button class="primary" id="signInBtn" type="button">Entrar</button><button class="smallbtn" id="signUpBtn" type="button">Criar conta</button></div><p class="note" id="authMessage" aria-live="polite"></p></section>
