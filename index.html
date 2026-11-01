@@ -255,7 +255,15 @@ body:not(.logged-organizae) .app{display:none}</style>
 </div>
 
 <div class="app">
-<header class="top"><div class="toprow"><div class="brand"><div class="logo">O</div><div><h1>Organizaê</h1><p>Seu dinheiro, em ordem.</p></div></div><span class="pill">VERSÃO INICIAL</span></div><div class="greeting" id="greeting">Vamos cuidar do seu dinheiro</div><div class="balance-label">Saldo registrado</div><div class="balance" id="balance">R$ 0,00</div><div class="stats"><div class="stat"><span class="label">Entradas no mês</span><strong id="incomeTotal">R$ 0,00</strong></div><div class="stat"><span class="label">Despesas no mês</span><strong id="expenseTotal">R$ 0,00</strong></div></div></header>
+<header class="top"><div class="toprow"><div class="brand"><div class="logo">
+  <svg viewBox="0 0 100 100" width="100%" height="100%" fill="none" aria-label="Logo Organizaê">
+    <path d="M50 8 A42 42 0 1 0 91 42" stroke="#155eef" stroke-width="12" stroke-linecap="round"/>
+    <path d="M25 51 L46 72 L91 25" stroke="#155eef" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="78" y="5" width="13" height="13" rx="2" fill="#155eef"/>
+    <rect x="91" y="24" width="9" height="9" rx="2" fill="#155eef"/>
+    <rect x="77" y="34" width="12" height="12" rx="2" fill="#155eef"/>
+  </svg>
+</div><div><h1>Organizaê</h1><p>Seu dinheiro, em ordem.</p></div></div><span class="pill">VERSÃO INICIAL</span></div><div class="greeting" id="greeting">Vamos cuidar do seu dinheiro</div><div class="balance-label">Saldo registrado</div><div class="balance" id="balance">R$ 0,00</div><div class="stats"><div class="stat"><span class="label">Entradas no mês</span><strong id="incomeTotal">R$ 0,00</strong></div><div class="stat"><span class="label">Despesas no mês</span><strong id="expenseTotal">R$ 0,00</strong></div></div></header>
 <section class="auth hidden" id="authPanel"><h2>Acesse sua conta do Organizaê</h2><p class="note">Crie uma conta com seu e-mail ou entre se já tiver cadastro. Seus lançamentos ficarão vinculados à sua conta.</p><div class="authgrid"><div class="wide"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com"></div><div class="wide"><label for="authPassword">Senha (mínimo de 6 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha"></div></div><div class="authactions"><button class="primary" id="signInBtn" type="button">Entrar</button><button class="smallbtn" id="signUpBtn" type="button">Criar conta</button></div><p class="note" id="authMessage" aria-live="polite"></p></section>
 <div class="accountbar" id="accountBar"><span id="accountEmail"></span><button class="smallbtn" id="signOutBtn" type="button">Sair da conta</button></div>
 <div class="notice" id="cloudNotice"><strong>Organizaê conectado ao Supabase</strong>Entre na sua conta para carregar e salvar seus lançamentos com segurança.</div>
