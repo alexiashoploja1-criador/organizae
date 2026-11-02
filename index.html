@@ -312,6 +312,7 @@ const SUPABASE_URL='https://pvgeheuwuddlakktmkwt.supabase.co';
 const SUPABASE_ANON_KEY='sb_publishable_qMM3IY_ZzX6AGkN06qUGtA_HeNxmIGm';
 const $=id=>document.getElementById(id), KEY='organizae.transactions.v1';
 $('auth-slot').appendChild($('authPanel'));
+$('auth-slot').appendChild($('forgotPasswordPanel'));
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 let transactions=[],type='income',currentUser=null,busy=false;
 const money=n=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(n)||0);
