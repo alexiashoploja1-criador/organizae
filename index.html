@@ -343,7 +343,35 @@ $('welcome-back').addEventListener('click',()=>{
 });
 async function loadCloud(){if(!currentUser)return;const {data,error}=await supabase.from('transactions').select('id,type,description,amount,category,transaction_date,created_at').eq('user_id',currentUser.id).order('transaction_date',{ascending:false});if(error){toast('Erro ao carregar dados: '+error.message);return}transactions=(data||[]).map(r=>({id:String(r.id),type:r.type==='Entrada'?'income':'expense',description:r.description,amount:Number(r.amount),category:r.category,date:r.transaction_date,created:new Date(r.created_at).getTime()||0}));initFilters();render()}
 $('signUpBtn').addEventListener('click',async()=>{if(busy)return;const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||password.length<6){authMsg('Informe um e-mail válido e uma senha com pelo menos 6 caracteres.');return}setBusy(true);authMsg('Criando sua conta...');const {data,error}=await supabase.auth.signUp({email,password});setBusy(false);if(error){authMsg('Não foi possível criar a conta: '+error.message);return}if(data.session){showSignedIn(data.user);await loadCloud();authMsg('Conta criada e acesso iniciado.')}else{authMsg('Cadastro iniciado. Confira seu e-mail para confirmar a conta e depois volte aqui para entrar.')}});
-$('signInBtn').addEventListener('click',async()=>{if(busy)return;const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||!password){authMsg('Informe seu e-mail e sua senha.');return}setBusy(true);authMsg('Entrando...');const {data,error}=await supabase.auth.signInWithPassword({email,password});setBusy(false);if(error){authMsg('Não foi possível entrar: '+error.message);return}showSignedIn(data.user);await loadCloud();authMsg('');toast('Acesso realizado.')});
+$('signInBtn').addEventListener('click',async()=>{
+  if(busy)return;
+  const email=$('authEmail').value.trim(),password=$('authPassword').value;
+  if(!email||!password){
+    authMsg('Informe seu e-mail e sua senha.');
+    return;
+  }
+  setBusy(true);
+  authMsg('Entrando...');
+  const {data,error}=await supabase.auth.signInWithPassword({email,password});
+  setBusy(false);
+  if(error){
+    const erro=String(error.message||'').toLowerCase();
+    if(erro.includes('invalid login credentials')){
+      authMsg('E-mail ou senha incorretos. Confira seus dados e tente novamente.');
+    }else if(erro.includes('email not confirmed')){
+      authMsg('Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada.');
+    }else if(erro.includes('network')||erro.includes('fetch')){
+      authMsg('Não foi possível conectar. Verifique sua internet e tente novamente.');
+    }else{
+      authMsg('Não foi possível entrar. Confira seus dados e tente novamente.');
+    }
+    return;
+  }
+  showSignedIn(data.user);
+  await loadCloud();
+  authMsg('');
+  toast('Acesso realizado.');
+});
 $('forgotPasswordBtn').addEventListener('click',()=>{
   $('authPanel').classList.add('hidden');
   $('forgotPasswordPanel').classList.remove('hidden');
