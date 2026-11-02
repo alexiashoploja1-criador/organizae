@@ -435,7 +435,16 @@ supabase.auth.onAuthStateChange((event,session)=>{
     $('welcome-organizae').style.display='flex';
     $('authPanel').classList.add('hidden');
     $('welcome-options').classList.add('hidden');
-    $('welcome-back').classList.add('hidden');
+    $('welcome-back').addEventListener('click',()=>{
+  $('authPanel').classList.add('hidden');
+  $('forgotPasswordPanel').classList.add('hidden');
+  $('resetPasswordPanel').classList.add('hidden');
+  $('welcome-options').classList.remove('hidden');
+  $('welcome-back').classList.add('hidden');
+  $('signInBtn').classList.remove('hidden');
+  $('signUpBtn').classList.remove('hidden');
+  $('authMessage').textContent='';
+});
     $('forgotPasswordPanel').classList.add('hidden');
     $('resetPasswordPanel').classList.remove('hidden');
     $('resetPasswordMessage').textContent='';
