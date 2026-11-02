@@ -347,8 +347,7 @@ $('backToLoginBtn').addEventListener('click',()=>{
   $('authPanel').classList.remove('hidden');
   $('welcome-options').classList.add('hidden');
   $('welcome-back').classList.remove('hidden');
-  $('welcome-organizae').style.display='flex';
-  document.body.classList.remove('logged-organizae');
+  $('authMessage').textContent='';
 });
 
 $('sendRecoveryBtn').addEventListener('click',async()=>{
