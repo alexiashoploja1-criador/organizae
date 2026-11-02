@@ -437,10 +437,17 @@ $('sendRecoveryBtn').addEventListener('click',async()=>{
     redirectTo:'https://alexiashoploja1-criador.github.io/organizae/'
   });
 
-  btn.disabled=false;
-
-  if(error){
-    $('recoveryMessage').textContent='Não foi possível enviar: '+error.message;
+  btn.disabled=  if(error){
+    const erro=String(error.message||'').toLowerCase();
+    if(erro.includes('rate limit')||erro.includes('too many requests')){
+      $('recoveryMessage').textContent='Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+    }else if(erro.includes('invalid email')){
+      $('recoveryMessage').textContent='O endereço de e-mail informado é inválido.';
+    }else if(erro.includes('network')||erro.includes('fetch')){
+      $('recoveryMessage').textContent='Falha na conexão. Verifique sua internet e tente novamente.';
+    }else{
+      $('recoveryMessage').textContent='Não foi possível enviar o link. Confira o e-mail e tente novamente.';
+    }
     return;
   }
 
