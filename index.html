@@ -422,6 +422,9 @@ supabase.auth.getSession().then(async({data,error})=>{if(error){authMsg('Erro ao
 supabase.auth.onAuthStateChange((event,session)=>{
   if(event==='PASSWORD_RECOVERY'){
     $('authPanel').classList.add('hidden');
+        document.body.classList.add('logged-organizae');
+    $('welcome-organizae').style.display='none';
+    $('welcome-options').classList.add('hidden');
     $('forgotPasswordPanel').classList.add('hidden');
     $('resetPasswordPanel').classList.remove('hidden');
     $('resetPasswordMessage').textContent='';
