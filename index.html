@@ -264,6 +264,40 @@ body:not(.logged-organizae) .app{display:none}</style>
 </svg>
 </div><div><h1>Organizaê</h1><p>Seu dinheiro, em ordem.</p></div></div><span class="pill">VERSÃO INICIAL</span></div><div class="greeting" id="greeting">Vamos cuidar do seu dinheiro</div><div class="balance-label">Saldo registrado</div><div class="balance" id="balance">R$ 0,00</div><div class="stats"><div class="stat"><span class="label">Entradas no mês</span><strong id="incomeTotal">R$ 0,00</strong></div><div class="stat"><span class="label">Despesas no mês</span><strong id="expenseTotal">R$ 0,00</strong></div></div></header>
 <section class="auth hidden" id="authPanel"><h2>Acesse sua conta do Organizaê</h2><p class="note">Crie uma conta com seu e-mail ou entre se já tiver cadastro. Seus lançamentos ficarão vinculados à sua conta.</p><div class="authgrid"><div class="wide"><label for="authEmail">E-mail</label><input id="authEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com"></div><div class="wide"><label for="authPassword">Senha (mínimo de 6 caracteres)</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="Digite sua senha"></div></div><div class="authactions"><button class="primary" id="signInBtn" type="button">Entrar</button><button class="smallbtn" id="signUpBtn" type="button">Criar conta</button></div><button class="smallbtn" id="forgotPasswordBtn" type="button">Esqueci minha senha</button><p class="note" id="authMessage" aria-live="polite"></p></section>
+<section class="auth hidden" id="resetPasswordPanel">
+  <h2>Crie uma nova senha</h2>
+  <p class="note">Digite sua nova senha e confirme para atualizar seu acesso.</p>
+
+  <div class="authgrid">
+    <div class="wide">
+      <label for="newPassword">Nova senha</label>
+      <input id="newPassword" type="password" autocomplete="new-password" placeholder="Digite a nova senha">
+    </div>
+
+    <div class="wide">
+      <label for="confirmNewPassword">Confirmar nova senha</label>
+      <input id="confirmNewPassword" type="password" autocomplete="new-password" placeholder="Repita a nova senha">
+    </div>
+  </div>
+
+  <button class="primary" id="saveNewPasswordBtn" type="button">Salvar nova senha</button>
+  <p class="note" id="resetPasswordMessage" aria-live="polite"></p>
+</section>
+<section class="auth hidden" id="forgotPasswordPanel">
+  <h2>Recuperar senha</h2>
+  <p class="note">Informe seu e-mail cadastrado para receber o link de recuperação.</p>
+
+  <div class="authgrid">
+    <div class="wide">
+      <label for="recoveryEmail">E-mail cadastrado</label>
+      <input id="recoveryEmail" type="email" autocomplete="email" placeholder="seuemail@exemplo.com">
+    </div>
+  </div>
+
+  <button class="primary" id="sendRecoveryBtn" type="button">Enviar link de recuperação</button>
+  <button class="smallbtn" id="backToLoginBtn" type="button">Voltar ao login</button>
+  <p class="note" id="recoveryMessage" aria-live="polite"></p>
+</section>  
 <div class="accountbar" id="accountBar"><span id="accountEmail"></span><button class="smallbtn" id="signOutBtn" type="button">Sair da conta</button></div>
 <div class="notice" id="cloudNotice"><strong>Organizaê conectado ao Supabase</strong>Entre na sua conta para carregar e salvar seus lançamentos com segurança.</div>
 <input id="backupFile" type="file" accept="application/json,.json" class="hidden">
@@ -299,26 +333,81 @@ $('welcome-back').addEventListener('click',()=>{ $('authPanel').classList.add('h
 async function loadCloud(){if(!currentUser)return;const {data,error}=await supabase.from('transactions').select('id,type,description,amount,category,transaction_date,created_at').eq('user_id',currentUser.id).order('transaction_date',{ascending:false});if(error){toast('Erro ao carregar dados: '+error.message);return}transactions=(data||[]).map(r=>({id:String(r.id),type:r.type==='Entrada'?'income':'expense',description:r.description,amount:Number(r.amount),category:r.category,date:r.transaction_date,created:new Date(r.created_at).getTime()||0}));initFilters();render()}
 $('signUpBtn').addEventListener('click',async()=>{if(busy)return;const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||password.length<6){authMsg('Informe um e-mail válido e uma senha com pelo menos 6 caracteres.');return}setBusy(true);authMsg('Criando sua conta...');const {data,error}=await supabase.auth.signUp({email,password});setBusy(false);if(error){authMsg('Não foi possível criar a conta: '+error.message);return}if(data.session){showSignedIn(data.user);await loadCloud();authMsg('Conta criada e acesso iniciado.')}else{authMsg('Cadastro iniciado. Confira seu e-mail para confirmar a conta e depois volte aqui para entrar.')}});
 $('signInBtn').addEventListener('click',async()=>{if(busy)return;const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||!password){authMsg('Informe seu e-mail e sua senha.');return}setBusy(true);authMsg('Entrando...');const {data,error}=await supabase.auth.signInWithPassword({email,password});setBusy(false);if(error){authMsg('Não foi possível entrar: '+error.message);return}showSignedIn(data.user);await loadCloud();authMsg('');toast('Acesso realizado.')});
-$('forgotPasswordBtn').addEventListener('click',async()=>{
-  const email=$('authEmail').value.trim();
+$('forgotPasswordBtn').addEventListener('click',()=>{
+  $('authPanel').classList.add('hidden');
+  $('forgotPasswordPanel').classList.remove('hidden');
+  $('recoveryMessage').textContent='';
+});
+
+$('backToLoginBtn').addEventListener('click',()=>{
+  $('forgotPasswordPanel').classList.add('hidden');
+  $('authPanel').classList.remove('hidden');
+});
+
+$('sendRecoveryBtn').addEventListener('click',async()=>{
+  const email=$('recoveryEmail').value.trim();
+
   if(!email){
-    authMsg('Informe seu e-mail para receber o link de recuperação.');
-    $('authEmail').focus();
+    $('recoveryMessage').textContent='Informe seu e-mail cadastrado.';
+    $('recoveryEmail').focus();
     return;
   }
-  setBusy(true);
-  authMsg('Enviando link de recuperação...');
+
+  const btn=$('sendRecoveryBtn');
+  btn.disabled=true;
+  $('recoveryMessage').textContent='Enviando link de recuperação...';
+
   const {error}=await supabase.auth.resetPasswordForEmail(email,{
     redirectTo:'https://alexiashoploja1-criador.github.io/organizae/'
   });
-  setBusy(false);
+
+  btn.disabled=false;
+
   if(error){
-    authMsg('Não foi possível enviar: '+error.message);
+    $('recoveryMessage').textContent='Não foi possível enviar: '+error.message;
     return;
   }
-  authMsg('Se o e-mail estiver cadastrado, você receberá um link para criar uma nova senha.');
+
+  $('recoveryMessage').textContent='Se o e-mail estiver cadastrado, você receberá um link para criar uma nova senha.';
 });
+
 $('signOutBtn').addEventListener('click',async()=>{if(busy)return;setBusy(true);const {error}=await supabase.auth.signOut();setBusy(false);if(error){toast('Erro ao sair: '+error.message);return}showSignedOut();authMsg('Você saiu da sua conta.')});
+$('saveNewPasswordBtn').addEventListener('click',async()=>{
+  const password=$('newPassword').value;
+  const confirmation=$('confirmNewPassword').value;
+  const message=$('resetPasswordMessage');
+
+  if(password.length<6){
+    message.textContent='A senha precisa ter pelo menos 6 caracteres.';
+    return;
+  }
+
+  if(password!==confirmation){
+    message.textContent='As senhas não são iguais.';
+    return;
+  }
+
+  const btn=$('saveNewPasswordBtn');
+  btn.disabled=true;
+  message.textContent='Atualizando sua senha...';
+
+  const {error}=await supabase.auth.updateUser({password});
+
+  btn.disabled=false;
+
+  if(error){
+    message.textContent='Não foi possível atualizar: '+error.message;
+    return;
+  }
+
+  message.textContent='Senha atualizada com sucesso. Você já pode entrar com sua nova senha.';
+  $('newPassword').value='';
+  $('confirmNewPassword').value='';
+  await supabase.auth.signOut();
+  $('resetPasswordPanel').classList.add('hidden');
+  $('authPanel').classList.remove('hidden');
+  authMsg('Entre com sua nova senha.');
+});
 document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.type;$('type').value=type;document.querySelectorAll('[data-type]').forEach(x=>{x.classList.remove('active','income','expense')});b.classList.add('active',type);const opts=type==='income'?['Salário','Vendas','Outras entradas','Outros']:['Alimentação','Moradia','Transporte','Saúde','Educação','Lazer','Contas','Compras','Outros'];$('category').innerHTML=opts.map(x=>`<option>${x}</option>`).join('')}));
 $('txForm').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){toast('Entre na sua conta primeiro.');return}const description=$('description').value.trim(),raw=$('amount').value.trim().replace(/R\$\s?/g,'').replace(/\s/g,''),normalized=raw.includes(',')?raw.replace(/\./g,'').replace(',','.'):raw,amount=Number(normalized),date=$('date').value;if(!description||!Number.isFinite(amount)||amount<=0||!date){toast('Confira descrição, valor e data.');return}const payload={user_id:currentUser.id,type:type==='income'?'Entrada':'Despesa',description,amount,category:$('category').value,transaction_date:date};const btn=e.submitter;btn.disabled=true;const {data,error}=await supabase.from('transactions').insert(payload).select('id,type,description,amount,category,transaction_date,created_at').single();btn.disabled=false;if(error){toast('Não foi possível salvar: '+error.message);return}transactions.push({id:String(data.id),type:type,description:data.description,amount:Number(data.amount),category:data.category,date:data.transaction_date,created:new Date(data.created_at).getTime()});initFilters();$('monthFilter').value=monthKey(date);$('kindFilter').value='all';$('description').value='';$('amount').value='';render();toast('Movimentação salva na nuvem.')});
 $('txList').addEventListener('click',async e=>{const b=e.target.closest('[data-delete]');if(!b||!currentUser)return;const id=b.dataset.delete,t=transactions.find(x=>x.id===id);if(!t||!confirm(`Apagar a movimentação “${t.description}”?`))return;const {error}=await supabase.from('transactions').delete().eq('id',Number(id)).eq('user_id',currentUser.id);if(error){toast('Não foi possível apagar: '+error.message);return}transactions=transactions.filter(x=>x.id!==id);initFilters();render();toast('Movimentação apagada.')});
@@ -330,8 +419,19 @@ $('backupFile').addEventListener('change',async e=>{const file=e.target.files[0]
 function download(content,name,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 $('aboutBtn').addEventListener('click',()=>$('modal').style.display='flex');$('closeModal').addEventListener('click',()=>$('modal').style.display='none');$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').style.display='none'});$('date').value=iso(today);showSignedOut();
 supabase.auth.getSession().then(async({data,error})=>{if(error){authMsg('Erro ao verificar acesso: '+error.message);return}if(data.session){showSignedIn(data.session.user);await loadCloud()}});
-supabase.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT')showSignedOut();else if(session&&event==='SIGNED_IN'){showSignedIn(session.user);setTimeout(loadCloud,0)}});
-})();
+supabase.auth.onAuthStateChange((event,session)=>{
+  if(event==='PASSWORD_RECOVERY'){
+    $('authPanel').classList.add('hidden');
+    $('forgotPasswordPanel').classList.add('hidden');
+    $('resetPasswordPanel').classList.remove('hidden');
+    $('resetPasswordMessage').textContent='';
+  }else if(event==='SIGNED_OUT'){
+    showSignedOut();
+  }else if(session&&event==='SIGNED_IN'){
+    showSignedIn(session.user);
+    setTimeout(loadCloud,0);
+  }
+});
 </script>
 </body>
 </html>
