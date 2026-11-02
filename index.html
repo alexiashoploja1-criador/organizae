@@ -424,9 +424,12 @@ $('saveNewPasswordBtn').addEventListener('click',async()=>{
   $('newPassword').value='';
   $('confirmNewPassword').value='';
   await supabase.auth.signOut();
-  $('resetPasswordPanel').classList.add('hidden');
+    $('resetPasswordPanel').classList.add('hidden');
+  $('forgotPasswordPanel').classList.add('hidden');
+  $('welcome-options').classList.add('hidden');
+  $('welcome-back').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
-  authMsg('Entre com sua nova senha.');
+  authMsg('Senha atualizada. Entre com sua nova senha.');
 });
 document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.type;$('type').value=type;document.querySelectorAll('[data-type]').forEach(x=>{x.classList.remove('active','income','expense')});b.classList.add('active',type);const opts=type==='income'?['Salário','Vendas','Outras entradas','Outros']:['Alimentação','Moradia','Transporte','Saúde','Educação','Lazer','Contas','Compras','Outros'];$('category').innerHTML=opts.map(x=>`<option>${x}</option>`).join('')}));
 $('txForm').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){toast('Entre na sua conta primeiro.');return}const description=$('description').value.trim(),raw=$('amount').value.trim().replace(/R\$\s?/g,'').replace(/\s/g,''),normalized=raw.includes(',')?raw.replace(/\./g,'').replace(',','.'):raw,amount=Number(normalized),date=$('date').value;if(!description||!Number.isFinite(amount)||amount<=0||!date){toast('Confira descrição, valor e data.');return}const payload={user_id:currentUser.id,type:type==='income'?'Entrada':'Despesa',description,amount,category:$('category').value,transaction_date:date};const btn=e.submitter;btn.disabled=true;const {data,error}=await supabase.from('transactions').insert(payload).select('id,type,description,amount,category,transaction_date,created_at').single();btn.disabled=false;if(error){toast('Não foi possível salvar: '+error.message);return}transactions.push({id:String(data.id),type:type,description:data.description,amount:Number(data.amount),category:data.category,date:data.transaction_date,created:new Date(data.created_at).getTime()});initFilters();$('monthFilter').value=monthKey(date);$('kindFilter').value='all';$('description').value='';$('amount').value='';render();toast('Movimentação salva na nuvem.')});
