@@ -342,7 +342,40 @@ $('welcome-back').addEventListener('click',()=>{
   $('authMessage').textContent='';
 });
 async function loadCloud(){if(!currentUser)return;const {data,error}=await supabase.from('transactions').select('id,type,description,amount,category,transaction_date,created_at').eq('user_id',currentUser.id).order('transaction_date',{ascending:false});if(error){toast('Erro ao carregar dados: '+error.message);return}transactions=(data||[]).map(r=>({id:String(r.id),type:r.type==='Entrada'?'income':'expense',description:r.description,amount:Number(r.amount),category:r.category,date:r.transaction_date,created:new Date(r.created_at).getTime()||0}));initFilters();render()}
-$('signUpBtn').addEventListener('click',async()=>{if(busy)return;const email=$('authEmail').value.trim(),password=$('authPassword').value;if(!email||password.length<6){authMsg('Informe um e-mail válido e uma senha com pelo menos 6 caracteres.');return}setBusy(true);authMsg('Criando sua conta...');const {data,error}=await supabase.auth.signUp({email,password});setBusy(false);if(error){authMsg('Não foi possível criar a conta: '+error.message);return}if(data.session){showSignedIn(data.user);await loadCloud();authMsg('Conta criada e acesso iniciado.')}else{authMsg('Cadastro iniciado. Confira seu e-mail para confirmar a conta e depois volte aqui para entrar.')}});
+$('signUpBtn').addEventListener('click',async()=>{
+  if(busy)return;
+  const email=$('authEmail').value.trim(),password=$('authPassword').value;
+  if(!email||password.length<6){
+    authMsg('Informe um e-mail válido e uma senha com pelo menos 6 caracteres.');
+    return;
+  }
+  setBusy(true);
+  authMsg('Criando sua conta...');
+  const {data,error}=await supabase.auth.signUp({email,password});
+  setBusy(false);
+  if(error){
+    const erro=String(error.message||'').toLowerCase();
+    if(erro.includes('already registered')||erro.includes('already been registered')){
+      authMsg('Este e-mail já possui uma conta. Tente entrar.');
+    }else if(erro.includes('password')){
+      authMsg('A senha não atende aos requisitos. Escolha outra senha com pelo menos 6 caracteres.');
+    }else if(erro.includes('invalid email')){
+      authMsg('O endereço de e-mail informado é inválido.');
+    }else if(erro.includes('rate limit')){
+      authMsg('Muitas tentativas. Aguarde alguns minutos e tente novamente.');
+    }else{
+      authMsg('Não foi possível criar sua conta. Confira os dados e tente novamente.');
+    }
+    return;
+  }
+  if(data.session){
+    showSignedIn(data.user);
+    await loadCloud();
+    authMsg('Conta criada e acesso iniciado.');
+  }else{
+    authMsg('Cadastro iniciado. Confira seu e-mail para confirmar a conta e depois volte aqui para entrar.');
+  }
+});
 $('signInBtn').addEventListener('click',async()=>{
   if(busy)return;
   const email=$('authEmail').value.trim(),password=$('authPassword').value;
