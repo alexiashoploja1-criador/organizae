@@ -345,6 +345,10 @@ $('backToLoginBtn').addEventListener('click',()=>{
   $('forgotPasswordPanel').classList.add('hidden');
   $('resetPasswordPanel').classList.add('hidden');
   $('authPanel').classList.remove('hidden');
+  $('welcome-options').classList.add('hidden');
+  $('welcome-back').classList.remove('hidden');
+  $('welcome-organizae').style.display='flex';
+  document.body.classList.remove('logged-organizae');
 });
 
 $('sendRecoveryBtn').addEventListener('click',async()=>{
