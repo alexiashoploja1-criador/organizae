@@ -437,7 +437,9 @@ $('sendRecoveryBtn').addEventListener('click',async()=>{
     redirectTo:'https://alexiashoploja1-criador.github.io/organizae/'
   });
 
-  btn.disabled=  if(error){
+    btn.disabled=false;
+
+  if(error){
     const erro=String(error.message||'').toLowerCase();
     if(erro.includes('rate limit')||erro.includes('too many requests')){
       $('recoveryMessage').textContent='Muitas tentativas. Aguarde alguns minutos e tente novamente.';
