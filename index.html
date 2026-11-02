@@ -446,21 +446,7 @@ supabase.auth.getSession().then(async({data,error})=>{
     await loadCloud();
   }
 });
-  if(event==='PASSWORD_RECOVERY'){
-    $('authPanel').classList.add('hidden');
-        document.body.classList.add('logged-organizae');
-    $('welcome-organizae').style.display='none';
-    $('welcome-options').classList.add('hidden');
-    $('forgotPasswordPanel').classList.add('hidden');
-    $('resetPasswordPanel').classList.remove('hidden');
-    $('resetPasswordMessage').textContent='';
-  }else if(event==='SIGNED_OUT'){
-    showSignedOut();
-  }else if(session&&event==='SIGNED_IN'){
-    showSignedIn(session.user);
-    setTimeout(loadCloud,0);
-  }
-});
+ 
 })();
 </script>
 </body>
