@@ -397,9 +397,14 @@ $('saveNewPasswordBtn').addEventListener('click',async()=>{
   btn.disabled=false;
 
   if(error){
-    message.textContent='Não foi possível atualizar: '+error.message;
-    return;
+  const erro=String(error.message||'').toLowerCase();
+  if(error.code==='same_password'||erro.includes('different from the old password')||erro.includes('same password')){
+    message.textContent='Escolha uma senha diferente da que você usa atualmente.';
+  }else{
+    message.textContent='Não foi possível atualizar a senha. Tente novamente.';
   }
+  return;
+}
 
   message.textContent='Senha atualizada com sucesso. Você já pode entrar com sua nova senha.';
   $('newPassword').value='';
