@@ -553,7 +553,22 @@ $('txForm').addEventListener('submit',async e=>{
   render();
   toast('Movimentação salva na nuvem.');
 });
-$('txList').addEventListener('click',async e=>{const b=e.target.closest('[data-delete]');if(!b||!currentUser)return;const id=b.dataset.delete,t=transactions.find(x=>x.id===id);if(!t||!confirm(`Apagar a movimentação “${t.description}”?`))return;const {error}=await supabase.from('transactions').delete().eq('id',Number(id)).eq('user_id',currentUser.id);if(error){toast('Não foi possível apagar: '+error.message);return}transactions=transactions.filter(x=>x.id!==id);initFilters();render();toast('Movimentação apagada.')});
+$('txList').addEventListener('click',async e=>{
+  const b=e.target.closest('[data-delete]');
+  if(!b||!currentUser)return;
+  const id=b.dataset.delete;
+  const t=transactions.find(x=>x.id===id);
+  if(!t||!confirm(`Apagar a movimentação “${t.description}”?`))return;
+  const {error}=await supabase.from('transactions').delete().eq('id',Number(id)).eq('user_id',currentUser.id);
+  if(error){
+    toast('Não foi possível apagar a movimentação. Verifique sua conexão e tente novamente.');
+    return;
+  }
+  transactions=transactions.filter(x=>x.id!==id);
+  initFilters();
+  render();
+  toast('Movimentação apagada.');
+});
 $('monthFilter').addEventListener('change',render);$('kindFilter').addEventListener('change',render);
 $('exportBtn').addEventListener('click',()=>{if(!transactions.length){toast('Não há dados para exportar.');return}const rows=[['Data','Tipo','Descrição','Categoria','Valor'],...transactions.map(t=>[t.date,t.type==='income'?'Entrada':'Despesa',t.description,t.category,t.amount.toFixed(2).replace('.',',')])],csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');download(csv,'organizae-movimentacoes.csv','text/csv;charset=utf-8')});
 $('backupBtn').addEventListener('click',()=>download(JSON.stringify({app:'Organizaê',exportadoEm:new Date().toISOString(),transactions:transactions.map(t=>({...t}))},null,2),'organizae-backup.json','application/json'));
