@@ -444,11 +444,7 @@ $('backToLoginBtn').addEventListener('click',()=>{
 $('sendRecoveryBtn').addEventListener('click',async()=>{
   const email=$('recoveryEmail').value.trim();
 
-  if(!email){
-      if(!email){
-    $('recoveryEmail').focus();
-    return;
-  }
+    if(!email){
     $('recoveryEmail').focus();
     return;
   }
