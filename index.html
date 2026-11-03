@@ -445,18 +445,10 @@ $('sendRecoveryBtn').addEventListener('click',async()=>{
   const email=$('recoveryEmail').value.trim();
 
   if(!email){
-    $('signOutBtn').addEventListener('click',async()=>{
-  if(busy)return;
-  setBusy(true);
-  const {error}=await supabase.auth.signOut();
-  setBusy(false);
-  if(error){
-    toast('Não foi possível sair da conta. Verifique sua conexão e tente novamente.');
+      if(!email){
+    $('recoveryEmail').focus();
     return;
   }
-  showSignedOut();
-  authMsg('Você saiu da sua conta.');
-});
     $('recoveryEmail').focus();
     return;
   }
