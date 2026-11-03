@@ -523,7 +523,36 @@ $('saveNewPasswordBtn').addEventListener('click',async()=>{
   authMsg('Senha atualizada. Entre com sua nova senha.');
 });
 document.querySelectorAll('[data-type]').forEach(b=>b.addEventListener('click',()=>{type=b.dataset.type;$('type').value=type;document.querySelectorAll('[data-type]').forEach(x=>{x.classList.remove('active','income','expense')});b.classList.add('active',type);const opts=type==='income'?['Salário','Vendas','Outras entradas','Outros']:['Alimentação','Moradia','Transporte','Saúde','Educação','Lazer','Contas','Compras','Outros'];$('category').innerHTML=opts.map(x=>`<option>${x}</option>`).join('')}));
-$('txForm').addEventListener('submit',async e=>{e.preventDefault();if(!currentUser){toast('Entre na sua conta primeiro.');return}const description=$('description').value.trim(),raw=$('amount').value.trim().replace(/R\$\s?/g,'').replace(/\s/g,''),normalized=raw.includes(',')?raw.replace(/\./g,'').replace(',','.'):raw,amount=Number(normalized),date=$('date').value;if(!description||!Number.isFinite(amount)||amount<=0||!date){toast('Confira descrição, valor e data.');return}const payload={user_id:currentUser.id,type:type==='income'?'Entrada':'Despesa',description,amount,category:$('category').value,transaction_date:date};const btn=e.submitter;btn.disabled=true;const {data,error}=await supabase.from('transactions').insert(payload).select('id,type,description,amount,category,transaction_date,created_at').single();btn.disabled=false;if(error){toast('Não foi possível salvar: '+error.message);return}transactions.push({id:String(data.id),type:type,description:data.description,amount:Number(data.amount),category:data.category,date:data.transaction_date,created:new Date(data.created_at).getTime()});initFilters();$('monthFilter').value=monthKey(date);$('kindFilter').value='all';$('description').value='';$('amount').value='';render();toast('Movimentação salva na nuvem.')});
+$('txForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!currentUser){toast('Entre na sua conta primeiro.');return}
+  const description=$('description').value.trim();
+  const raw=$('amount').value.trim().replace(/R\$\s?/g,'').replace(/\s/g,'');
+  const normalized=raw.includes(',')?raw.replace(/\./g,'').replace(',','.'):raw;
+  const amount=Number(normalized);
+  const date=$('date').value;
+  if(!description||!Number.isFinite(amount)||amount<=0||!date){
+    toast('Confira descrição, valor e data.');
+    return;
+  }
+  const payload={user_id:currentUser.id,type:type==='income'?'Entrada':'Despesa',description,amount,category:$('category').value,transaction_date:date};
+  const btn=e.submitter;
+  btn.disabled=true;
+  const {data,error}=await supabase.from('transactions').insert(payload).select('id,type,description,amount,category,transaction_date,created_at').single();
+  btn.disabled=false;
+  if(error){
+    toast('Não foi possível salvar a movimentação. Verifique sua conexão e tente novamente.');
+    return;
+  }
+  transactions.push({id:String(data.id),type:type,description:data.description,amount:Number(data.amount),category:data.category,date:data.transaction_date,created:new Date(data.created_at).getTime()});
+  initFilters();
+  $('monthFilter').value=monthKey(date);
+  $('kindFilter').value='all';
+  $('description').value='';
+  $('amount').value='';
+  render();
+  toast('Movimentação salva na nuvem.');
+});
 $('txList').addEventListener('click',async e=>{const b=e.target.closest('[data-delete]');if(!b||!currentUser)return;const id=b.dataset.delete,t=transactions.find(x=>x.id===id);if(!t||!confirm(`Apagar a movimentação “${t.description}”?`))return;const {error}=await supabase.from('transactions').delete().eq('id',Number(id)).eq('user_id',currentUser.id);if(error){toast('Não foi possível apagar: '+error.message);return}transactions=transactions.filter(x=>x.id!==id);initFilters();render();toast('Movimentação apagada.')});
 $('monthFilter').addEventListener('change',render);$('kindFilter').addEventListener('change',render);
 $('exportBtn').addEventListener('click',()=>{if(!transactions.length){toast('Não há dados para exportar.');return}const rows=[['Data','Tipo','Descrição','Categoria','Valor'],...transactions.map(t=>[t.date,t.type==='income'?'Entrada':'Despesa',t.description,t.category,t.amount.toFixed(2).replace('.',',')])],csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');download(csv,'organizae-movimentacoes.csv','text/csv;charset=utf-8')});
