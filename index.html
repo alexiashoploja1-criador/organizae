@@ -573,7 +573,50 @@ $('monthFilter').addEventListener('change',render);$('kindFilter').addEventListe
 $('exportBtn').addEventListener('click',()=>{if(!transactions.length){toast('Não há dados para exportar.');return}const rows=[['Data','Tipo','Descrição','Categoria','Valor'],...transactions.map(t=>[t.date,t.type==='income'?'Entrada':'Despesa',t.description,t.category,t.amount.toFixed(2).replace('.',',')])],csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(';')).join('\r\n');download(csv,'organizae-movimentacoes.csv','text/csv;charset=utf-8')});
 $('backupBtn').addEventListener('click',()=>download(JSON.stringify({app:'Organizaê',exportadoEm:new Date().toISOString(),transactions:transactions.map(t=>({...t}))},null,2),'organizae-backup.json','application/json'));
 $('importBtn').addEventListener('click',()=>{if(!currentUser){toast('Entre na sua conta primeiro.');return}$('backupFile').click()});
-$('backupFile').addEventListener('change',async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{const parsed=JSON.parse(await file.text()),items=parsed.transactions;if(!Array.isArray(items)||!items.length){toast('O backup não contém lançamentos.');return}const {data:existing,error:checkError}=await supabase.from('transactions').select('id').eq('user_id',currentUser.id).limit(1);if(checkError){toast('Não foi possível verificar a conta: '+checkError.message);return}if(existing&&existing.length){toast('Sua conta já tem lançamentos. Para evitar duplicação, a importação foi interrompida.');return}const rows=items.map(t=>({user_id:currentUser.id,type:t.type==='income'||t.type==='Entrada'?'Entrada':'Despesa',description:String(t.description||'').slice(0,200),amount:Number(t.amount),category:String(t.category||'Outros'),transaction_date:String(t.date||t.transaction_date||'').slice(0,10)}));if(rows.some(r=>!r.description||!Number.isFinite(r.amount)||r.amount<=0||!/^\d{4}-\d{2}-\d{2}$/.test(r.transaction_date))){toast('O backup contém algum dado inválido. Nada foi importado.');return}if(!confirm(`Importar ${rows.length} lançamentos para esta conta? Esta ação só deve ser feita uma vez.`))return;const {error}=await supabase.from('transactions').insert(rows);if(error){toast('Falha na importação: '+error.message);return}await loadCloud();toast(`${rows.length} lançamentos importados com sucesso.`)}catch(err){toast('Não foi possível ler esse backup JSON.')}});
+$('backupFile').addEventListener('change',async e=>{
+  const file=e.target.files[0];
+  e.target.value='';
+  if(!file)return;
+  try{
+    const parsed=JSON.parse(await file.text());
+    const items=parsed.transactions;
+    if(!Array.isArray(items)||!items.length){
+      toast('O backup não contém lançamentos.');
+      return;
+    }
+    const {data:existing,error:checkError}=await supabase.from('transactions').select('id').eq('user_id',currentUser.id).limit(1);
+    if(checkError){
+      toast('Não foi possível verificar sua conta. Tente novamente.');
+      return;
+    }
+    if(existing&&existing.length){
+      toast('Sua conta já tem lançamentos. Para evitar duplicação, a importação foi interrompida.');
+      return;
+    }
+    const rows=items.map(t=>({
+      user_id:currentUser.id,
+      type:t.type==='income'||t.type==='Entrada'?'Entrada':'Despesa',
+      description:String(t.description||'').slice(0,200),
+      amount:Number(t.amount),
+      category:String(t.category||'Outros'),
+      transaction_date:String(t.date||t.transaction_date||'').slice(0,10)
+    }));
+    if(rows.some(r=>!r.description||!Number.isFinite(r.amount)||r.amount<=0||!/^\d{4}-\d{2}-\d{2}$/.test(r.transaction_date))){
+      toast('O backup contém algum dado inválido. Nada foi importado.');
+      return;
+    }
+    if(!confirm(`Importar ${rows.length} lançamentos para esta conta? Esta ação só deve ser feita uma vez.`))return;
+    const {error}=await supabase.from('transactions').insert(rows);
+    if(error){
+      toast('Não foi possível importar os lançamentos. Verifique sua conexão e tente novamente.');
+      return;
+    }
+    await loadCloud();
+    toast(`${rows.length} lançamentos importados com sucesso.`);
+  }catch(err){
+    toast('Não foi possível ler esse backup JSON. Verifique se o arquivo é válido.');
+  }
+});
 function download(content,name,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
 $('aboutBtn').addEventListener('click',()=>$('modal').style.display='flex');$('closeModal').addEventListener('click',()=>$('modal').style.display='none');$('modal').addEventListener('click',e=>{if(e.target===$('modal'))$('modal').style.display='none'});$('date').value=iso(today);showSignedOut();
 supabase.auth.onAuthStateChange((event,session)=>{
