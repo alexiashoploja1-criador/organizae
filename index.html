@@ -658,7 +658,7 @@ supabase.auth.onAuthStateChange((event,session)=>{
 
 supabase.auth.getSession().then(async({data,error})=>{
   if(error){
-    authMsg('Erro ao verificar acesso: '+error.message);
+    authMsg('Não foi possível verificar seu acesso. Verifique sua conexão e tente novamente.');
     return;
   }
   if(data.session){
