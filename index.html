@@ -341,7 +341,28 @@ $('welcome-back').addEventListener('click',()=>{
   $('signUpBtn').classList.remove('hidden');
   $('authMessage').textContent='';
 });
-async function loadCloud(){if(!currentUser)return;const {data,error}=await supabase.from('transactions').select('id,type,description,amount,category,transaction_date,created_at').eq('user_id',currentUser.id).order('transaction_date',{ascending:false});if(error){toast('Erro ao carregar dados: '+error.message);return}transactions=(data||[]).map(r=>({id:String(r.id),type:r.type==='Entrada'?'income':'expense',description:r.description,amount:Number(r.amount),category:r.category,date:r.transaction_date,created:new Date(r.created_at).getTime()||0}));initFilters();render()}
+async function loadCloud(){
+  if(!currentUser)return;
+  const {data,error}=await supabase.from('transactions')
+    .select('id,type,description,amount,category,transaction_date,created_at')
+    .eq('user_id',currentUser.id)
+    .order('transaction_date',{ascending:false});
+  if(error){
+    toast('Não foi possível carregar seus lançamentos. Verifique sua conexão e tente novamente.');
+    return;
+  }
+  transactions=(data||[]).map(r=>({
+    id:String(r.id),
+    type:r.type==='Entrada'?'income':'expense',
+    description:r.description,
+    amount:Number(r.amount),
+    category:r.category,
+    date:r.transaction_date,
+    created:new Date(r.created_at).getTime()||0
+  }));
+  initFilters();
+  render();
+}
 $('signUpBtn').addEventListener('click',async()=>{
   if(busy)return;
   const email=$('authEmail').value.trim(),password=$('authPassword').value;
